@@ -1,6 +1,9 @@
-# TableNet
+# TableNet UNet based
 
 This repository consists on a Pytorch implementation of [TableNet](https://arxiv.org/abs/2001.01469).
+
+Please refer to original [OCR TableNet reposotory](https://github.com/tomassosorio/OCR_tablenet) and reference [Unet repository](https://github.com/mateuszbuda/brain-segmentation-pytorch)
+
 
 To training or predict, you should first install the requirements by running the following code:
 
