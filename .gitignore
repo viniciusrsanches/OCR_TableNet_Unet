@@ -1,0 +1,9 @@
+venv
+.idea
+tb_logs
+*.ckpt
+*.jpg
+*.xml
+*.png
+*.bmp
+.vscode
