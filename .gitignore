@@ -8,3 +8,4 @@ tb_logs
 *.bmp
 .vscode
 *.pyc
+__pycache__
