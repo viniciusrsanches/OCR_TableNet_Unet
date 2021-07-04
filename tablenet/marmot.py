@@ -8,6 +8,7 @@ import pytorch_lightning as pl
 from albumentations import Compose
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
+#import torch
 
 
 class MarmotDataset(Dataset):
@@ -52,7 +53,8 @@ class MarmotDataset(Dataset):
         image = sample["image"]
         mask_table = sample["mask"][:, :, 0].unsqueeze(0)
         mask_column = sample["mask"][:, :, 1].unsqueeze(0)
-        return image, mask_table, mask_column
+        #return image, torch.cat((mask_table,mask_column),dim=0)
+        return image, mask_table , mask_column
 
 
 class MarmotDataModule(pl.LightningDataModule):
