@@ -29,7 +29,7 @@ transforms_preprocessing = album.Compose([
 ])
 
 complaint_dataset = MarmotDataModule(data_dir="./data/Marmot_data", transforms_preprocessing=transforms_preprocessing,
-                                     transforms_augmentation=transforms_augmentation, batch_size=10)  # type: ignore
+                                     transforms_augmentation=transforms_augmentation, batch_size=15)  # type: ignore
 
 model = TableNetModule(batch_norm=False)
 

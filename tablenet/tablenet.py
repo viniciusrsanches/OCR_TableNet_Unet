@@ -16,7 +16,7 @@ EPSILON = 1e-15
 class TableNetModule(pl.LightningModule):
     """Pytorch Lightning Module for TableNet."""
 
-    def __init__(self, num_class: int = 1, batch_norm: bool = False):
+    def __init__(self, num_class: int = 2, batch_norm: bool = False):
 
         super().__init__()
         self.model = TableNet(num_class, batch_norm)
@@ -31,9 +31,9 @@ class TableNetModule(pl.LightningModule):
 
         samples, labels_table,labels_column = batch
         #samples, labels_table = batch
-        output_table, output_column = self.forward(samples)
-        #output = self.forward(samples)
-        #output_table, output_column = output[:,0,::].unsqueeze(dim=1) , output[:,1,::].unsqueeze(dim=1)
+        #output_table, output_column = self.forward(samples)
+        output = self.forward(samples)
+        output_table, output_column = output[:,0,::].unsqueeze(dim=1) , output[:,1,::].unsqueeze(dim=1)
 
         loss_table = self.dice_loss(output_table, labels_table)
         loss_column = self.dice_loss(output_column, labels_column)
@@ -52,9 +52,9 @@ class TableNetModule(pl.LightningModule):
 
         samples, labels_table, labels_column = batch
         #samples, labels_table = batch
-        output_table, output_column = self.forward(samples)
-        #output = self.forward(samples)
-        #output_table, output_column = output[:,0,::].unsqueeze(dim=1),output[:,1,::].unsqueeze(dim=1)
+        #output_table, output_column = self.forward(samples)
+        output = self.forward(samples)
+        output_table, output_column = output[:,0,::].unsqueeze(dim=1),output[:,1,::].unsqueeze(dim=1)
         #loss_table = self.dice_loss(output_table, labels_table)
         loss_table = self.dice_loss(output_table, labels_table)
         #loss_column = self.dice_loss(output_column, labels_column)
@@ -77,9 +77,9 @@ class TableNetModule(pl.LightningModule):
     def test_step(self, batch, batch_idx):
 
         samples, labels_table, labels_column = batch
-        output_table, output_column = self.forward(samples)
-        #output = self.forward(samples)
-        #output_table, output_column = output[:,0,::].unsqueeze(dim=1) , output[:,1,::].unsqueeze(dim=1)
+        #output_table, output_column = self.forward(samples)
+        output = self.forward(samples)
+        output_table, output_column = output[:,0,::].unsqueeze(dim=1) , output[:,1,::].unsqueeze(dim=1)
 
 
         loss_table = self.dice_loss(output_table, labels_table)
@@ -98,10 +98,10 @@ class TableNetModule(pl.LightningModule):
 
     def configure_optimizers(self):
 
-        optimizer = optim.SGD(self.parameters(), lr=0.0001)
+        optimizer = optim.SGD(self.parameters(), lr=0.001)
         scheduler = {
             'scheduler': optim.lr_scheduler.OneCycleLR(optimizer,
-                                                       max_lr=0.001, 
+                                                       max_lr=0.01, 
                                                        steps_per_epoch=204, 
                                                        epochs=500, 
                                                        pct_start=0.1),
@@ -139,42 +139,42 @@ class TableNet(nn.Module):
         self.upconv4 = nn.ConvTranspose2d(
             features * 16, features * 8, kernel_size=2, stride=2
         )
-        self.upconv4_ = nn.ConvTranspose2d(
+        """self.upconv4_ = nn.ConvTranspose2d(
             features * 16, features * 8, kernel_size=2, stride=2
-        )
+        )"""
         self.decoder4 = TableNet._block((features * 8) * 2, features * 8, name="dec4")
-        self.decoder4_ = TableNet._block((features * 8) * 2, features * 8, name="dec4_")
+        """self.decoder4_ = TableNet._block((features * 8) * 2, features * 8, name="dec4_")"""
         self.upconv3 = nn.ConvTranspose2d(
             features * 8, features * 4, kernel_size=2, stride=2
         )
-        self.upconv3_ = nn.ConvTranspose2d(
+        """self.upconv3_ = nn.ConvTranspose2d(
             features * 8, features * 4, kernel_size=2, stride=2
-        )
+        )"""
         self.decoder3 = TableNet._block((features * 4) * 2, features * 4, name="dec3")
-        self.decoder3_ = TableNet._block((features * 4) * 2, features * 4, name="dec3_")
+        """self.decoder3_ = TableNet._block((features * 4) * 2, features * 4, name="dec3_")"""
         self.upconv2 = nn.ConvTranspose2d(
             features * 4, features * 2, kernel_size=2, stride=2
         )
-        self.upconv2_ = nn.ConvTranspose2d(
+        """self.upconv2_ = nn.ConvTranspose2d(
             features * 4, features * 2, kernel_size=2, stride=2
-        )
+        )"""
         self.decoder2 = TableNet._block((features * 2) * 2, features * 2, name="dec2")
-        self.decoder2_ = TableNet._block((features * 2) * 2, features * 2, name="dec2_")
+        """self.decoder2_ = TableNet._block((features * 2) * 2, features * 2, name="dec2_")"""
         self.upconv1 = nn.ConvTranspose2d(
             features * 2, features, kernel_size=2, stride=2
         )
-        self.upconv1_ = nn.ConvTranspose2d(
+        """self.upconv1_ = nn.ConvTranspose2d(
             features * 2, features, kernel_size=2, stride=2
-        )
+        )"""
         self.decoder1 = TableNet._block(features * 2, features, name="dec1")
-        self.decoder1_ = TableNet._block(features * 2, features, name="dec1_")
+        """self.decoder1_ = TableNet._block(features * 2, features, name="dec1_")"""
 
         self.conv = nn.Conv2d(
             in_channels=features, out_channels=out_channels, kernel_size=1
         )
-        self.conv_ = nn.Conv2d(
+        """self.conv_ = nn.Conv2d(
             in_channels=features, out_channels=out_channels, kernel_size=1
-        )
+        )"""
 
     def forward(self, x):
 
@@ -186,32 +186,32 @@ class TableNet(nn.Module):
         bottleneck = self.bottleneck(self.pool4(enc4))
 
         dec4 = self.upconv4(bottleneck)
-        dec4_ = self.upconv4_(bottleneck)
+        #dec4_ = self.upconv4_(bottleneck)
         dec4 = torch.cat((dec4, enc4), dim=1)
-        dec4_ = torch.cat((dec4_, enc4), dim=1)
+        #dec4_ = torch.cat((dec4_, enc4), dim=1)
         dec4 = self.decoder4(dec4)
-        dec4_ = self.decoder4_(dec4_)
+        #dec4_ = self.decoder4_(dec4_)
         dec3 = self.upconv3(dec4)
-        dec3_ = self.upconv3_(dec4_)
+        #dec3_ = self.upconv3_(dec4_)
         dec3 = torch.cat((dec3, enc3), dim=1)
-        dec3_ = torch.cat((dec3_, enc3), dim=1)
+        #dec3_ = torch.cat((dec3_, enc3), dim=1)
         dec3 = self.decoder3(dec3)
-        dec3_ = self.decoder3_(dec3_)
+        #dec3_ = self.decoder3_(dec3_)
         dec2 = self.upconv2(dec3)
-        dec2_ = self.upconv2_(dec3_)
+        #dec2_ = self.upconv2_(dec3_)
         dec2 = torch.cat((dec2, enc2), dim=1)
-        dec2_ = torch.cat((dec2_, enc2), dim=1)
+        #dec2_ = torch.cat((dec2_, enc2), dim=1)
         dec2 = self.decoder2(dec2)
-        dec2_ = self.decoder2_(dec2_)
+        #dec2_ = self.decoder2_(dec2_)
         dec1 = self.upconv1(dec2)
-        dec1_ = self.upconv1_(dec2_)
+        #dec1_ = self.upconv1_(dec2_)
         dec1 = torch.cat((dec1, enc1), dim=1)
-        dec1_ = torch.cat((dec1_, enc1), dim=1)
+        #dec1_ = torch.cat((dec1_, enc1), dim=1)
         dec1 = self.decoder1(dec1)
-        dec1_ = self.decoder1_(dec1_)
+        #dec1_ = self.decoder1_(dec1_)
         #conv1 = torch.sigmoid(self.conv(dec1)[:,0,::]).unsqueeze(dim=1)
         #conv1_ = torch.sigmoid(self.conv(dec1)[:,1,::]).unsqueeze(dim=1)
-        return torch.sigmoid(self.conv(dec1)), torch.sigmoid(self.conv_(dec1_))
+        return torch.sigmoid(self.conv(dec1))
         #print(conv1[:,0,::].unsqueeze(dim=1).shape)
         #print (conv1_.shape)
         #return conv1 , conv1_
@@ -269,7 +269,7 @@ class DiceLoss(nn.Module):
         Returns (tensor): Dice loss.
 
         """
-        inputs = inputs.view(-1)
+        inputs = inputs.contiguous().view(-1)
         targets = targets.view(-1)
 
         intersection = (inputs * targets).sum()
