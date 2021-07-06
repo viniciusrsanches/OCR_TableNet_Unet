@@ -12,9 +12,9 @@ from tablenet import MarmotDataModule
 from tablenet import TableNetModule
 
 #image_size = (896, 896)
-image_size = (256, 224 )
+image_size = (320,320 )
 transforms_augmentation = album.Compose([
-    album.Resize(320, 240, always_apply=True),
+    album.Resize(512, 512, always_apply=True),
     album.RandomResizedCrop(*image_size, scale=(0.7, 1.0), ratio=(0.7, 1)),
     album.HorizontalFlip(),
     album.VerticalFlip(),
@@ -29,7 +29,7 @@ transforms_preprocessing = album.Compose([
 ])
 
 complaint_dataset = MarmotDataModule(data_dir="./data/Marmot_data", transforms_preprocessing=transforms_preprocessing,
-                                     transforms_augmentation=transforms_augmentation, batch_size=15)  # type: ignore
+                                     transforms_augmentation=transforms_augmentation, batch_size=8)  # type: ignore
 
 model = TableNetModule(batch_norm=False)
 
