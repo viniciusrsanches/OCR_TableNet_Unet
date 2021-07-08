@@ -42,6 +42,7 @@ lr_monitor = LearningRateMonitor(logging_interval='step')
 
 trainer = pl.Trainer(callbacks=[lr_monitor, checkpoint_callback, early_stop_callback], logger=logger, max_epochs=500,
                      gpus=1 if torch.cuda.is_available() else None)
+
 if __name__ == '__main__':
     trainer.fit(model, datamodule=complaint_dataset)
     trainer.test()

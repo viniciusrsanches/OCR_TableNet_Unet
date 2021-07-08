@@ -128,7 +128,7 @@ def predict(image_path: str, model_weights: str) -> List[pd.DataFrame]:
     from albumentations.pytorch.transforms import ToTensorV2
 
     transforms = album.Compose([
-        album.Resize(896, 896, always_apply=True),
+        album.Resize(320, 320, always_apply=True),
         album.Normalize(),
         ToTensorV2()
     ])
